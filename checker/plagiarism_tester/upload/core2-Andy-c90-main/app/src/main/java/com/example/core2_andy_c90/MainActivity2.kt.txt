@@ -1,0 +1,45 @@
+package com.example.core2_andy_c90
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
+
+
+class MainActivity2 : AppCompatActivity() {
+    private var detail: LocationDetail? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
+
+        //get data from previous activity
+        intent.getParcelableExtra<LocationDetail>("locationDetail").also { detail = it }
+
+        detail?.let {
+            //prepare items for input based in its id
+            val image = findViewById<ImageView>(R.id.show_image)
+            val title = findViewById<TextView>(R.id.show_title)
+            val description = findViewById<TextView>(R.id.show_description)
+            val rating = findViewById<RatingBar>(R.id.show_rating)
+            title.text = it.title
+            description.text = it.description
+            rating.rating  = it.rate
+            when (it.title) {
+                "Melbourne Museum" -> {
+                    image.setImageResource(R.drawable.melbourne_museum)
+                }
+                "Flinders Street Station" -> {
+                    image.setImageResource(R.drawable.flinder_street_station)
+                }
+                "Swinburne Uni" -> {
+                    image.setImageResource(R.drawable.swinburne_building)
+                }
+                "Victoria One" -> {
+                    image.setImageResource(R.drawable.victoria_one)
+                }
+            }
+        }
+
+    }
+}

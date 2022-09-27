@@ -1,0 +1,112 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package edjee;
+
+import entity.MyuserDTO;
+import java.util.ArrayList;
+import session.MyuserFacadeRemote;
+
+/**
+ *
+ * @author yuand
+ */
+public class MyuserAppClient {
+
+    @javax.ejb.EJB
+    private static MyuserFacadeRemote myuserFacade;
+
+    /**
+     * @param args the command line arguments
+     */
+    public MyuserAppClient() {
+    }
+
+    public static void main(String[] args) {
+        MyuserAppClient client = new MyuserAppClient();
+
+        // assuming inputs from keyboard or any GUI 
+        MyuserDTO myuserDTO = new MyuserDTO("000001", "Peter Smith", "123456",
+                "psmith@swin.edu.au", "9876543210", "Swinburne EN510f",
+                "What is my name?", "Peter");
+        boolean result = client.createRecord(myuserDTO);
+        client.showCreateResult(result, myuserDTO);
+
+        // assuming inputs from keyboard or any GUI 
+        MyuserDTO myuserDTO2 = new MyuserDTO("000007", "David Lee", "654321",
+                "dlee@swin.edu.au", "0123456789", "Swinburne EN510g",
+                "What is my name?", "David");
+        result = client.createRecord(myuserDTO2);
+        client.showCreateResult(result, myuserDTO2);
+
+        //Test
+        MyuserDTO getRecord = client.getRecord("000004");
+        if (getRecord != null) {
+            String RecordText = getRecord.getUserid() + " ," + getRecord.getName().trim() + " ,"
+                    + getRecord.getPassword().trim() + " ," + getRecord.getEmail().trim() + " ,"
+                    + getRecord.getPhone().trim() + " ," + getRecord.getAddress().trim() + " ,"
+                    + getRecord.getSecQn().trim() + " ," + getRecord.getSecAns().trim();
+            System.out.println(RecordText);
+        } else {
+            System.out.println("Record dose not exisit");
+        }
+
+        MyuserDTO myuserDTO3 = new MyuserDTO("000001", "Andy Smith", "123456",
+                "psmith@swin.edu.au", "9876543210", "Swinburne EN510f",
+                "Who is it", "me");
+        Boolean updateRecord = client.updateRecord(myuserDTO3);
+        if (updateRecord == true) {
+            System.out.println("record updated");
+        } else {
+            System.out.println("record does not exisit");
+        }
+
+        Boolean deleteRecord = client.detelteRecord("000007");
+        if (deleteRecord == true) {
+            System.out.println("Record deleted");
+        } else {
+            System.out.println("Record does not exisit");
+        }
+
+        ArrayList<MyuserDTO> getRecordsByAddress = client.getRecordsByAddress("Swinburne EN513a");
+        if (getRecordsByAddress != null) {
+            System.out.println(getRecordsByAddress);
+            System.out.println(getRecordsByAddress.get(0).getName());
+        } else {
+            System.out.println("No user in this address");
+        }
+
+    }
+
+    public void showCreateResult(boolean result, MyuserDTO myuserDTO) {
+        if (result) {
+            System.out.println("Record with primary key " + myuserDTO.getUserid()
+                    + " has been created in the database table.");
+        } else {
+            System.out.println("Record with primary key " + myuserDTO.getUserid()
+                    + " could not be created in the database table!");
+        }
+    }
+
+    public Boolean createRecord(MyuserDTO myuserDTO) {
+        return myuserFacade.createRecord(myuserDTO);
+    }
+
+    public MyuserDTO getRecord(String userId) {
+        return myuserFacade.getRecord(userId);
+    }
+
+    public Boolean updateRecord(MyuserDTO myuserDTO) {
+        return myuserFacade.updateRecord(myuserDTO);
+    }
+
+    public Boolean detelteRecord(String userId) {
+        return myuserFacade.deleteRecord(userId);
+    }
+
+    public ArrayList<MyuserDTO> getRecordsByAddress(String address) {
+        return myuserFacade.getRecordsByAddress(address);
+    }
+}

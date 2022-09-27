@@ -14,12 +14,30 @@ error_reporting(0);
 </head>
 <body id="top">
 <?php
+require "functions.php";
 #connection to the database
 $conn = mysqli_connect("localhost:3306","root","") or die("Erreur: Connection Issue");
 $bd = mysqli_select_db($conn,"checker") or die("Errreur: Database Issue");
 
-$default_student_id = 1;
-$default_assignment_id = 1;
+session_start();
+if (!isset($_SESSION['profile'])) {
+    header("Location: index.php");
+} else {
+    $profile = unserialize($_SESSION['profile']);
+	$id = $profile[0];
+	$name = $profile[1];
+	$email = $profile[2];
+	$submittion_detail = unserialize($_SESSION['submittion_detail']);
+	$course = explode("--",$submittion_detail[0]);
+	$assignment = explode("--",$submittion_detail[1]);
+	
+	$default_student_id = $id;
+	$default_assignment_id = $assignment[0];
+	
+	$course_id = $course[0];
+	
+}
+
 
 if (isset($_POST['upload'])){
   #getting the file
@@ -33,13 +51,32 @@ if (isset($_POST['upload'])){
   $new_size = $file_size/1024;  
   $new_file_name = strtolower($file); 
   $final_file=str_replace(' ','-',$new_file_name);
+  
   if(move_uploaded_file($file_loc,$folder.$final_file))
   {
+	
+	$zip = new ZipArchive();
+    $x = $zip->open($folder.$file);
+    if($x === true) {
+		for($i = 0; $i < $zip->numFiles; $i++) 
+		{   
+			$fileInZip = $zip->statIndex($i);
+			$filename = $fileInZip['name'];
+			$zip->renameIndex($i, $filename.'.txt');
+			$zip->close();
+			$x = $zip->open($folder.$file);
+        }
+		
+        $zip->extractTo($folder);
+        $zip->close();
+    } else {
+        die("There was a problem. Please try again!");
+    }
     #checking if the file has the appropriate extension, if it does we store it in the database, if it doesn't we display an error and we redirect the student to the uplaod_file page
     $array = explode('.', $final_file);
     $extension = end($array);
       if($extension == "zip"){
-        $request_insert_file = "insert into submission(student,assignment,file) values(".$default_student_id.",".$default_assignment_id.",'".$final_file."')";
+        $request_insert_file = "insert into submission(student,assignment,file,course_id) values(".$default_student_id.",".$default_assignment_id.",'".$final_file."',".$course_id.")";
         $result = mysqli_query($conn,$request_insert_file);
         $last_submission_id = mysqli_insert_id($conn);
         $_SESSION["submission_id"] = $last_submission_id;
@@ -49,8 +86,57 @@ if (isset($_POST['upload'])){
         echo "<script type=\"text/javascript\">alert('Error : Upload a zip File')</script>";
         //header('Location: file_upload.php'); 
       }
-
+	  
  }
+}
+
+if(isset($_POST['username'])){
+	$username = $_POST['username'];
+	$token = $_POST['accessToken'];
+	$repository = $_POST['repository'];
+	$folder="upload/";
+	$URL="https://github.com/".$username."/".$repository."/archive/master.zip";
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL,'https://github.com');
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+	curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+	curl_setopt($ch, CURLOPT_USERPWD, "$username:$token");
+
+	curl_setopt($ch, CURLOPT_URL,$URL);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+	$zipfile=curl_exec ($ch);
+	curl_close ($ch);
+	$filename = rand(1000,100000)."-".$repository;
+	file_put_contents($folder.$filename.'.zip', $zipfile);
+	$zip = new ZipArchive(); 
+
+	$x = $zip->open('upload/'.$filename.'.zip'); 
+	if($x === true) {
+		for($i = 0; $i < $zip->numFiles; $i++) 
+		{   
+			$fileInZip = $zip->statIndex($i);
+			$fname = $fileInZip['name'];
+			$zip->renameIndex($i, $fname.'.txt');
+			
+        }
+		
+		$zip->extractTo("upload/");
+        $zip->close();
+        
+    } else {
+        die("There was a problem. Please try again!");
+    }
+	
+	$final_file = basename('upload/'.$filename.'.zip');
+	$request_insert_file = "insert into submission(student,assignment,file,course_id) values(".$default_student_id.",".$default_assignment_id.",'".LOAD_FILE('$final_file')."',".$course_id.")";
+    $result = mysqli_query($conn,$request_insert_file);
+    $last_submission_id = mysqli_insert_id($conn);
+    $_SESSION["submission_id"] = $last_submission_id;
+    echo "<script type=\"text/javascript\">alert('Success : File Submited Successfully')</script>";
 }
 ?>
 <div class="bgded" style="background-image:url('images/demo/backgrounds/01.webp');"> 

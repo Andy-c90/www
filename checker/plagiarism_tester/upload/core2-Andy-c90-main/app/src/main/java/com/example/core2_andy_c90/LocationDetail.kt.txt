@@ -1,0 +1,10 @@
+package com.example.core2_andy_c90
+
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class LocationDetail(val title:String,val description:String, val rate:Float): Parcelable {
+
+}

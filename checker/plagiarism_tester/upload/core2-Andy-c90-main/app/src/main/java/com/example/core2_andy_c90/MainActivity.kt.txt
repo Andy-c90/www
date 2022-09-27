@@ -1,0 +1,116 @@
+package com.example.core2_andy_c90
+
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import android.widget.ImageView
+
+
+class MainActivity : AppCompatActivity() {
+    override fun onStart() {
+        super.onStart()
+        Log.i("LIFECYCLE","onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("LIFECYCLE","onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("LIFECYCLE","onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.i("LIFECYCLE","onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("LIFECYCLE","onDestroy")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.i("LIFECYCLE","onRestart")
+    }
+
+    private lateinit var detail: LocationDetail
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        //get image by id
+        val image1 = findViewById<ImageView>(R.id.image1)
+        val image2 = findViewById<ImageView>(R.id.image2)
+        val image3 = findViewById<ImageView>(R.id.image3)
+        val image4 = findViewById<ImageView>(R.id.image4)
+
+
+
+
+        //set image on click listener
+        image1.setOnClickListener{
+            val title = getString(R.string.image1_title)
+            val description = getString(R.string.image1_description)
+            val rate = getString(R.string.image1_rating).toFloat()
+
+            detail = LocationDetail(title,description, rate)
+
+           //pass to next activity to know which image click
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                putExtra("locationDetail", detail)
+            }
+
+            startActivity(intent)
+        }
+
+        image2.setOnClickListener{
+            val title = getString(R.string.image2_title)
+            val description = getString(R.string.image2_description)
+            val rate = getString(R.string.image2_rating).toFloat()
+
+            detail = LocationDetail(title,description, rate)
+
+            //pass to next activity to know which image click
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                putExtra("locationDetail", detail)
+            }
+
+            startActivity(intent)
+        }
+
+        image3.setOnClickListener{
+            val title = getString(R.string.image3_title)
+            val description = getString(R.string.image3_description)
+            val rate = getString(R.string.image3_rating).toFloat()
+
+            detail = LocationDetail(title,description, rate)
+
+            //pass to next activity to know which image click
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                putExtra("locationDetail", detail)
+            }
+
+            startActivity(intent)
+        }
+
+        image4.setOnClickListener{
+            val title = getString(R.string.image4_title)
+            val description = getString(R.string.image4_description)
+            val rate = getString(R.string.image4_rating).toFloat()
+
+            detail = LocationDetail(title,description, rate)
+
+            //pass to next activity to know which image click
+            val intent = Intent(this, MainActivity2::class.java).apply {
+                putExtra("locationDetail", detail)
+            }
+
+            startActivity(intent)
+        }
+    }
+}

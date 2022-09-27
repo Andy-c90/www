@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Core2-Andy-c90</string>
+    <dimen name="image_height">250dp</dimen>
+    <dimen name="main2_image_height">400dp</dimen>
+
+    //style 1
+    <dimen name="title_size1">18dp</dimen>
+
+    //style 2
+    <dimen name="title_size2">15dp</dimen>
+
+    <string name="image1_title">Melbourne Museum</string>
+    <string name="image1_description">A museum locate at 11 Nicholson St, Carlton VIC 3053</string>
+    <string name="image1_rating">3</string>
+
+    <string name="image2_title">Flinders Street Station</string>
+    <string name="image2_description">A station at Flinders St, Melbourne VIC 3000</string>
+    <string name="image2_rating">4</string>
+
+    <string name="image3_title">Swinburne Uni</string>
+    <string name="image3_description">An university locate at  John St, Hawthorn VIC 3122</string>
+    <string name="image3_rating">5</string>
+
+    <string name="image4_title">Victoria One</string>
+    <string name="image4_description">An apartment at 462 Elizabeth St, Melbourne VIC 3000</string>
+    <string name="image4_rating">2</string>
+</resources>

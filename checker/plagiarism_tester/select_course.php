@@ -12,7 +12,6 @@ error_reporting(0);
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link href="layout/styles/layout.css" rel="stylesheet" type="text/css" media="all">
 </head>
-
 <body id="top">
   <div class="bgded" style="background-image:url('images/demo/backgrounds/01.webp');"> 
     <div class="wrapper overlay row0">
@@ -24,15 +23,14 @@ error_reporting(0);
     </div>
   </div>
 
-	  <div class="wrapper overlay">
-		<div id="pageintro2" class="hoc"> 
-		  <article>
-			<h3 class="heading">Code Submission System</h3>
-		  </article>
-		</div>
-	  </div>
+  <div class="wrapper overlay">
+    <div id="pageintro2" class="hoc"> 
+      <article>
+        <h3 class="heading">Code Submission System</h3>
+      </article>
+    </div>
+  </div>
 
-	
 <?php
 #connection to the database
 $conn = mysqli_connect("localhost:3306","root","") or die("Erreur: Connection Issue");
@@ -40,54 +38,41 @@ $bd = mysqli_select_db($conn,"checker") or die("Errreur: Database Issue");
 
 session_start();
 if (!isset($_SESSION['profile'])) {
-    header("Location: index.php");
+    header("Location: login.php");
 } else {
     $profile = unserialize($_SESSION['profile']);
-	$id = $profile[0];
-	$name = $profile[01];
-	$email = $profile[2];
+	$student_id = $profile[0];
+	$student_name = $profile[1];
+	$student_email = $profile[2];
 }
 
-include "navbar.php";
 
-echo "Welcome ".$name."<br>" ; 
-
-
-
-if (!empty($_POST["assignment"])&&!empty($_POST["course"])) {
-	$course = $_POST["course"];
-	$assignment = $_POST["assignment"];
-}else{
-	header("Location: select_course.php");
+$sql_getenrollement = "select * from enrollement left join course on enrollement.course_id = course.course_id where student = '$student_id' ";
+$get_enroollement = mysqli_query($conn,$sql_getenrollement);
+$rows = mysqli_fetch_row($get_enroollement);
+$courses = array();
+$count = 0;
+while($rows){
+	$courses[$count] = $rows[1]."--".$rows[4]; 
+	$rows = mysqli_fetch_row($get_enroollement);
+	$count+=1;
 }
 
-echo $course."<br>";
-echo $assignment;
 
-$submittion_detail = array($course,$assignment);
-$_SESSION['submittion_detail'] = serialize($submittion_detail);
 
 ?>
   <div class="wrapper coloured">
     <article id="cta" class="hoc container clear"> 
-		
-        <form method="post" action="questions.php" enctype="multipart/form-data">
-          <p>File upload</p>
-          <h6 class="heading"><span>&ldquo;</span>Upload a file and continue<span>&bdquo;</span></h6>
-          <input type="file" name="file_up" id="file" class="btn file"/>
-          <br></br>
+        <form method="post" action="Select_assignment.php" enctype="multipart/form-data">
+          <h6 class="heading"><span>&ldquo;</span>Select course<span>&bdquo;</span></h6>
+		  <select  name="course" id="course" >
+			<?php
+				foreach($courses as $course){
+					echo '<option value='.$course.'>'.$course.'</option>';
+				}
+			?>
+		  </select>
           <p><input type="submit" class="white_transparent" name="upload" value="Continue"></input></p>
-
-        </form>
-		<form method="post" action="questions.php" >
-          <p>Zip repository upload</p>
-          <h6 class="heading"><span>&ldquo;</span>Fill in github information and continue<span>&bdquo;</span></h6>
-			  <input type="text" name="username" id="username" placeholder ="username"  class="btn file"/></label><br>
-			  <input type="text" name="accessToken" id="accessToken" placeholder ="Access Token" class="btn file"/></label><br>
-			  <input type="text" name="repository" id="repository" placeholder ="Repository" class="btn file"/></label>
-          <br></br>
-          <p><input type="submit" class="white_transparent" name="gitupload" value="Continue"></input></p>
-
         </form>
     </article>
   </div>
